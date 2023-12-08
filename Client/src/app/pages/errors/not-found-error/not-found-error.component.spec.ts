@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ProjectHeaderComponent } from './project-header.component';
+import { NotFoundErrorComponent } from './not-found-error.component';
 
-describe('ProjectHeaderComponent', () => {
-  let component: ProjectHeaderComponent;
-  let fixture: ComponentFixture<ProjectHeaderComponent>;
+describe('NotFoundErrorComponent', () => {
+  let component: NotFoundErrorComponent;
+  let fixture: ComponentFixture<NotFoundErrorComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ProjectHeaderComponent ]
+      declarations: [ NotFoundErrorComponent ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ProjectHeaderComponent);
+    fixture = TestBed.createComponent(NotFoundErrorComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

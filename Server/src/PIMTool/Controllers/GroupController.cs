@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using PIMTool.Core.Contracts.Response;
 using PIMTool.Core.Domain.Entities;
 using PIMTool.Core.Interfaces.Services;
 
@@ -15,9 +16,10 @@ namespace PIMTool.Controllers
         }
         // GET: api/<GroupController>
         [HttpGet]
-        public IEnumerable<Group?> Get()
+        public ActionResult<GroupResponse> Get()
         {
-            return _groupService.GetAllGroup();
+            var response = _groupService.GetAllGroup();
+            return Ok(response);
         }
     }
 }

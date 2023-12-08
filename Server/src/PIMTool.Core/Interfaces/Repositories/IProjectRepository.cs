@@ -10,6 +10,7 @@ namespace PIMTool.Core.Interfaces.Repositories
 {
     public interface IProjectRepository : IRepository<Project>
     {
+        int TotalProjects();
         Task<Project?> GetProjectAsync(int projNum);
         // Task<Project?> GetProjectWithEmployee(int empId);
         IEnumerable<Project?> GetAllProjects(BaseParameters pagingParameters);

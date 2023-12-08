@@ -49,12 +49,12 @@ namespace PIMTool.Middlewares
             {
                 case Type _ when exceptionType == typeof(DupplicateProjectNumberException):
                     message = ex.Message;
-                    status = HttpStatusCode.Conflict;
+                    status = HttpStatusCode.BadRequest;
                     stackTrace = ex.StackTrace;
                     break;
                 case Type _ when exceptionType == typeof(ProjectNotFoundException):
                     message = ex.Message;
-                    status = HttpStatusCode.NotFound;
+                    status = HttpStatusCode.BadRequest;
                     stackTrace = ex.StackTrace;
                     break;
                 case Type _ when exceptionType == typeof(BusinessException):

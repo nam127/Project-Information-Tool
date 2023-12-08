@@ -17,6 +17,12 @@ public class ProjectRepository : Repository<Project>, IProjectRepository
         _sortHelper = sortHelper;
     }
 
+    public int TotalProjects()
+    {
+        var projects = _set.ToList();
+        return projects.Count;
+    }
+
     public IEnumerable<Project?> GetAllProjects(BaseParameters baseParameters)
     {
         var projects = _set.Include(p => p.ProjectEmployees).ThenInclude(e => e.Employee)
@@ -47,7 +53,7 @@ public class ProjectRepository : Repository<Project>, IProjectRepository
                 s.Customer.Contains(filterParameters.SearchTerm))
                     .OrderBy(p => p.ProjectNumber);
             }
-            if(filterParameters.Status != null)
+            if(filterParameters.Status != Core.Domain.Enums.ProjectStatus.EnumStatus.None)
             {
                 projects = projects.Where(p => p.Status == filterParameters.Status)
                 .OrderBy(o => o.ProjectNumber);

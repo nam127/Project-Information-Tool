@@ -3,6 +3,7 @@ using System.Transactions;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using PIMTool.Core.Contracts.Requests;
+using PIMTool.Core.Contracts.Response;
 using PIMTool.Core.Domain.Entities;
 using PIMTool.Core.Domain.Objects;
 using PIMTool.Core.Interfaces.Services;
@@ -23,17 +24,17 @@ namespace PIMTool.Controllers
         }
 
         [HttpGet]
-        public ActionResult<ProjectDto> GetAll([FromQuery]BaseParameters baseParameters)
+        public ActionResult<ProjectResponse> GetAll([FromQuery]BaseParameters baseParameters)
         {
             var projects = _projectService.GetAllProjectAsync(baseParameters);
-            return Ok(_mapper.Map<IEnumerable<ProjectDto>>(projects));
+            return Ok(projects);
         }
 
         [HttpGet("search")]
-        public ActionResult<ProjectDto> GetAllBySearch([FromQuery]FilterParameters filterParameters)
+        public ActionResult<ProjectResponse> GetAllBySearch([FromQuery]FilterParameters filterParameters)
         {
             var projects = _projectService.GetProjectsByFilter(filterParameters);
-            return Ok(_mapper.Map<IEnumerable<ProjectDto>>(projects));
+            return Ok(projects);
         }
 
         [HttpGet("{id}")]
@@ -54,20 +55,19 @@ namespace PIMTool.Controllers
             return Ok(projectAdd);
         }
 
-        [HttpDelete]
-        [Route("delete/{id}")]
+        [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteProjectAsync(int id)
         {
             await _projectService.DeleteProjectAsync(id);
-            return Ok("Delete Successfully");
+            return NoContent();
         }
 
         [HttpDelete]
         [Route("delete")]
-        public async Task<IActionResult> DeleteMultipleProjects(DeleteProjectsRequest request)
+        public async Task<IActionResult> DeleteMultipleProjects(int[] Ids)
         {
-            await _projectService.DeleteMultipleProjectsAsync(request.Ids.ToList());
-            return Ok("Delete Successfully");
+            await _projectService.DeleteMultipleProjectsAsync(Ids);
+            return Ok();
         }
 
         [HttpPut]

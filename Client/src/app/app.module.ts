@@ -13,6 +13,16 @@ import { MatTableModule } from '@angular/material/table';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { NgxPaginationModule } from 'ngx-pagination';
+import { MatSelectModule } from '@angular/material/select'; 
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ToastModule } from 'primeng/toast';
+import { Dialog, DialogModule } from 'primeng/dialog';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatOptionModule } from '@angular/material/core';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -21,10 +31,14 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { SidebarComponent } from './pages/home/sidebar/sidebar.component';
 import { ProjectListComponent } from './pages/home/project-list/project-list.component';
 import { HomeComponent } from './pages/home/home.component';
-import { HttpClientModule } from '@angular/common/http';
-import { ProjectHeaderComponent } from './pages/home/project-header/project-header.component';
-import { ReactiveFormsModule } from '@angular/forms';
+import { StatusPipe } from './custom-pipes/status-pipe.pipe';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { MatSortModule } from '@angular/material/sort';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
+export function createTranslateLoader(http: HttpClient) {
+  return new TranslateHttpLoader(http, './assets/i18n/', '.json');
+}
 
 @NgModule({
   declarations: [
@@ -33,7 +47,7 @@ import { ReactiveFormsModule } from '@angular/forms';
     SidebarComponent,
     ProjectListComponent,
     HomeComponent,
-    ProjectHeaderComponent,
+    StatusPipe,
   ],
   imports: [
     BrowserModule,
@@ -53,9 +67,24 @@ import { ReactiveFormsModule } from '@angular/forms';
     MatSnackBarModule,
     NgxPaginationModule,
     HttpClientModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatOptionModule,
+    MatSelectModule,
+    MatCheckboxModule,
+    ConfirmDialogModule,
+    ToastModule,
+    DialogModule,
+    MatSortModule,
+    TranslateModule.forRoot({
+      loader: {
+        provide: TranslateLoader,
+        useFactory: createTranslateLoader,
+        deps: [HttpClient, Location]
+      }
+    })
   ],
-  providers: [],
+  providers: [ConfirmationService, MessageService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

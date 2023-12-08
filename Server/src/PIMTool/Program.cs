@@ -1,9 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using PIMTool.Core.Interfaces.Repositories;
+using Newtonsoft.Json.Serialization;
 using PIMTool.Database;
 using PIMTool.Extensions;
 using PIMTool.Middlewares;
-using PIMTool.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +16,12 @@ builder.Services.AddCors(opt =>
             .AllowAnyMethod();
     });
 });
-builder.Services.AddControllers().AddNewtonsoftJson();
+builder.Services.AddControllers().AddNewtonsoftJson(options =>
+{
+    // Dùng ?? ignore referenced loops khi tr? v? respone json
+    options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+});
 
 builder.Services.AddDbContext<PimContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -42,7 +46,12 @@ if (app.Environment.IsDevelopment())
 app.UseMiddleware<GlobalExceptionMiddleware>();
 
 app.UseHttpsRedirection();
-app.UseCors();
+app.UseCors(
+    builder =>
+    builder.WithOrigins("http://localhost:4200")
+           .AllowAnyHeader()
+           .AllowAnyMethod()
+    );
 
 app.MapControllers();
 

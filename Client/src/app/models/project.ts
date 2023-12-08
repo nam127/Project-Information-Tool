@@ -1,10 +1,13 @@
+import { StatusEnum } from "../enums/status-enum";
+import { Group } from "./group";
+
 export interface Project {
     id: number;
     projectNumber: number;
     name: string;
     customer: string;
-    status: string;
+    status: StatusEnum;
     startDate: Date;
     endDate: Date;
-    selectedEmployeeId: number[];
+    visas: number[];
 }

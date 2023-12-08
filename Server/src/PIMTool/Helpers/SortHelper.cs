@@ -41,7 +41,7 @@ public class SortHelper<T> : ISortHelper<T>
         var orderQuery = orderQueryBuilder.ToString().TrimEnd(',', ' ');
 
         return entities.OrderBy(orderQuery);
-    }
+     }
 }
 
 

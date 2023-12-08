@@ -12,6 +12,7 @@ namespace PIMTool.Core.Domain.Enums
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public enum EnumStatus
         {
+            None,
             NEW,
             PLA,
             INP,

@@ -1,3 +1,4 @@
+using PIMTool.Core.Contracts.Response;
 using PIMTool.Core.Domain.Entities;
 using PIMTool.Core.Interfaces.Repositories;
 using PIMTool.Core.Interfaces.Services;
@@ -11,5 +12,14 @@ public class EmployeeService : IEmployeeService
     {
         _employeeRepository = employeeRepository;
     }
- 
+
+    public EmployeeResponse GetEmployee(string visa)
+    {
+        var employees = _employeeRepository.FindEmployeeByVisas(visa);
+        var response = new EmployeeResponse
+        {
+            Employees = employees
+        };
+        return response;
+    }
 }

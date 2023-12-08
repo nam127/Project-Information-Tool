@@ -1,54 +1,107 @@
-<table mat-table [dataSource]="dataSource | paginate: { itemsPerPage: pageSize, 
+<mat-card>
+    <div class="font-bold">
+        <h3>Project List</h3>
+    </div>
+    <div class="flex justify-between">
+        <form class="form" [formGroup]="searchForm" (ngSubmit)="onSubmit()">
+            <input type="text" formControlName="searchTerm" placeholder="Project number, name, customer name">
+            <mat-form-field>
+                <mat-select formControlName="statusValue" placeholder="Project Status">
+                    <mat-option value="new">NEW</mat-option>
+                    <mat-option value="pla">PLA</mat-option>
+                    <mat-option value="inp">INP</mat-option>
+                    <mat-option value="fin">FIN</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <button class="mat-raised-button bg-blue-500 rounded py-2 px-12 font-medium text-white" type="submit">
+                Search Project
+            </button>
+        </form>
+        <button class="mat-raised-button bg-gray rounded py-2 px-12 font-medium text-sky-500" (click)="onResetSearch()">
+            Reset Search
+        </button>
+    </div>
+</mat-card>
+
+<div *ngIf="searchState && count === 0">
+    <p class="">Not Found</p>
+</div>
+
+<div *ngIf="count > 0">
+    <table matSort mat-table [dataSource]="dataSource | paginate: { itemsPerPage: pageSize, 
     currentPage: pageNumber,
     totalItems: count
-    }" 
-class="mat-elevatation-z8 w-full">
-    <ng-container matColumnDef="number">
-        <th mat-header-cell *matHeaderCellDef>Number</th>
-        <td mat-cell *matCellDef="let project">{{ project.projectNumber }}</td>
-        <td mat-footer-cell *matFooterCellDef>
-        </td>
-    </ng-container>
-    <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef>Name</th>
-        <td mat-cell *matCellDef="let project">{{ project.name }}</td>
-        <td mat-footer-cell *matFooterCellDef>
-        </td>
-    </ng-container>
-    <ng-container matColumnDef="status">
-        <th mat-header-cell *matHeaderCellDef>Status</th>
-        <td mat-cell *matCellDef="let project">{{ project.status }}</td>
-        <td mat-footer-cell *matFooterCellDef>
-        </td>
-    </ng-container>
-    <ng-container matColumnDef="customer">
-        <th mat-header-cell *matHeaderCellDef>Customer</th>
-        <td mat-cell *matCellDef="let project">{{ project.customer }}</td>
-        <td mat-footer-cell *matFooterCellDef>
-        </td>
-    </ng-container>
-    <ng-container matColumnDef="startDate">
-        <th mat-header-cell *matHeaderCellDef>Start Date</th>
-        <td mat-cell *matCellDef="let project">{{ project.startDate | date: 'dd.MM.yyyy' }}</td>
-        <td mat-footer-cell *matFooterCellDef>
-        </td>
-    </ng-container>
-    <ng-container matColumnDef="action">
-        <th mat-header-cell *matHeaderCellDef>Delete</th>
-        <td mat-cell *matCellDef>
-            <mat-icon>delete</mat-icon>
-        </td>
-        <td mat-footer-cell *matFooterCellDef>
-        </td>
-    </ng-container>
-    <tr mat-header-row *matHeaderRowDef="columnsDisplayed"></tr>
-    <tr mat-row *matRowDef="let row; columns: columnsDisplayed;"></tr>
-</table>
+    }" class="mat-elevatation-z8 w-full">
+        <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let project">
+                <mat-checkbox (change)="onProjectIdChange($event, project.id)">
+                </mat-checkbox>
+            </td>
+            <td mat-footer-cell *matFooterCellDef></td>
+        </ng-container>
+        <ng-container matColumnDef="number">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Number</th>
+            <td mat-cell *matCellDef="let project">{{ project.projectNumber }}</td>
+            <td mat-footer-cell *matFooterCellDef>
+            </td>
+        </ng-container>
+        <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+            <td mat-cell *matCellDef="let project">{{ project.name }}</td>
+            <td mat-footer-cell *matFooterCellDef>
+            </td>
+        </ng-container>
+        <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+            <td mat-cell *matCellDef="let project">{{ project.status | statusPipe }}</td>
+            <td mat-footer-cell *matFooterCellDef>
+            </td>
+        </ng-container>
+        <ng-container matColumnDef="customer">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Customer</th>
+            <td mat-cell *matCellDef="let project">{{ project.customer }}</td>
+            <td mat-footer-cell *matFooterCellDef>
+            </td>
+        </ng-container>
+        <ng-container matColumnDef="startDate">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Start Date</th>
+            <td mat-cell *matCellDef="let project">{{ project.startDate | date: 'dd.MM.yyyy' }}</td>
+            <td mat-footer-cell *matFooterCellDef>
+            </td>
+        </ng-container>
+        <ng-container matColumnDef="action">
+            <th mat-header-cell *matHeaderCellDef>Delete</th>
+            <td mat-cell *matCellDef="let project">
+                <mat-icon (click)="openDeleteDialog(project.id)" [ngStyle]="{'cursor':'pointer', 'color':'red'}"
+                    >delete_outline</mat-icon>
+            </td>
+            <td mat-footer-cell *matFooterCellDef>
+            </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="columnsDisplayed"></tr>
+        <tr mat-row *matRowDef="let row; columns: columnsDisplayed;"></tr>
+    </table>
+    <div *ngIf="selectedItems.length > 0" class="flex justify-between items-center bg-slate-200 p-1">
+            <p class="text-lg font-medium text-cyan-500">{{selectedItems.length}} items selected</p>
+            <button class="flex items-center ml-2" style="color: red;" (click)="openDeleteProjectsDialog()">delete selected projects
+                <mat-icon>delete_outline</mat-icon>
+            </button>
+    </div>
+</div>
 <div class="d-flex justify-content-center">
-    <pagination-controls
-      previousLabel="Previous"
-      nextLabel="Next"
-      (pageChange)="onTableDataChange($event)"
-    >
+    <pagination-controls previousLabel="Previous" nextLabel="Next" (pageChange)="onTableDataChange($event)">
     </pagination-controls>
-  </div>
+</div>
+<p-toast [baseZIndex]="1000"></p-toast>
+<p-confirmDialog [style]="{width: '50vw'}"></p-confirmDialog>
+
+<p-dialog header="PIM Tool" 
+[modal]="true" 
+[(visible)]="visible" 
+[style]="{width: '50vw'}"
+[maximizable]="true">
+<p>
+    {{errorMessage}}
+</p>
+</p-dialog>

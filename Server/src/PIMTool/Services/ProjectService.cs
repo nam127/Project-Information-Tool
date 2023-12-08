@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using PIMTool.Core.Constants;
 using PIMTool.Core.Contracts.Requests;
+using PIMTool.Core.Contracts.Response;
 using PIMTool.Core.Domain.Entities;
 using PIMTool.Core.Domain.Enums;
 using PIMTool.Core.Domain.Objects;
@@ -30,14 +31,31 @@ namespace PIMTool.Services
             _groupRepository = groupRepository;
         }
 
-        public IEnumerable<Project?> GetAllProjectAsync(BaseParameters pagingParameters)
+        public ProjectResponse GetAllProjectAsync(BaseParameters pagingParameters)
         {
-            return _projectRepository.GetAllProjects(pagingParameters);
+            var projects = _projectRepository.GetAllProjects(pagingParameters);
+            var count = _projectRepository.TotalProjects();
+            var response = new ProjectResponse
+            {
+                Projects = projects,
+                pageNumber = pagingParameters.PageNumber,
+                pageSize = pagingParameters.PageSize,
+                totalPages = count
+            };
+            return response;
         }
 
-        public IEnumerable<Project?> GetProjectsByFilter(FilterParameters filterParameters)
+        public ProjectResponse GetProjectsByFilter(FilterParameters filterParameters)
         {
-            return _projectRepository.GetProjectsFiltered(filterParameters);
+            var projects = _projectRepository.GetProjectsFiltered(filterParameters);
+            var response = new ProjectResponse
+            {
+                Projects = projects,
+                pageNumber = filterParameters.PageNumber,
+                pageSize = filterParameters.PageSize,
+                totalPages = projects.Count()
+            };
+            return response;
         }
 
         public async Task<Project?> GetProjectAsync(int id, CancellationToken cancellationToken = default)
@@ -59,7 +77,7 @@ namespace PIMTool.Services
             var project = _mapper.Map<Project>(projectRequest);
             project.Version = Guid.NewGuid();
             var peList = employeeIds.Select(emp =>
-                new ProjectEmployee { Project = project, Employee = emp });
+                new ProjectEmployee { Project = project, EmployeeId = emp.Id });
             await _projectRepository.AddAsync(project, cancellationToken);
             await _projectEmployeeRepository.AddRangeAsync(peList.ToArray(), cancellationToken);
             await _projectEmployeeRepository.SaveChangesAsync(cancellationToken);

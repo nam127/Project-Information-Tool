@@ -22,8 +22,8 @@ public class EmployeeRepository : Repository<Employee>, IEmployeeRepository
         return await _set.AsNoTracking().Where(x => visas.Contains(x.Visa)).ToListAsync();
     }
 
-    public async Task<Employee?> GetByVisa(string[] visas)
+    public IEnumerable<Employee> FindEmployeeByVisas(string visa)
     {
-        return await _set.AsNoTracking().SingleOrDefaultAsync(x => visas.Contains(x.Visa));
+        return Get().Where(x => x.Visa.Contains(visa)).ToList();
     }
 }
