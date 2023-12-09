@@ -1,6 +1,8 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
+import { Sort } from '@angular/material/sort';
+import { Router } from '@angular/router';
 import { ConfirmEventType, ConfirmationService, MessageService } from 'primeng/api';
 import { Project } from 'src/app/models/project';
 import { ErrorHandlerService } from 'src/app/services/error-handler.service';
@@ -12,6 +14,7 @@ import { ProjectService } from 'src/app/services/project.service';
   styleUrls: ['./project-list.component.css'],
 })
 export class ProjectListComponent implements OnInit {
+
   pageSize: number = 5;
   pageNumber: number = 1;
   count: number = 0;
@@ -28,19 +31,21 @@ export class ProjectListComponent implements OnInit {
 
   columnsDisplayed: Array<string> = [
     'actions',
-    'number',
+    'projectNumber',
     'name',
     'status',
     'customer',
     'startDate',
     'action'
   ]
+
   constructor(
     private projectService: ProjectService,
     private fb: FormBuilder,
     private confirmService: ConfirmationService,
     private messageService: MessageService,
-    private errHandler: ErrorHandlerService,) { }
+    private errHandler: ErrorHandlerService,
+    private router: Router) { }
 
   ngOnInit(): void {
     const searchStateRemain = this.projectService.getSearchState();
@@ -59,9 +64,9 @@ export class ProjectListComponent implements OnInit {
       }
       else {
         this.onSubmit();
-        console.log(this.dataSource);
+        console.log('sau khi search');
       }
-    } 
+    }
     else {
       this.getProjects();
     }
@@ -76,7 +81,7 @@ export class ProjectListComponent implements OnInit {
       (_projects: any) => {
         this.count = _projects.totalPages;
         this.dataSource = _projects.projects;
-        console.log('total items: ' + _projects.totalPages);
+        console.log(this.count);
       }
     )
   }
@@ -86,6 +91,7 @@ export class ProjectListComponent implements OnInit {
       this.pageNumber = event;
       this.getProjects();
     } else {
+      this.pageNumber = event;
       this.onSubmit();
     }
   }
@@ -93,13 +99,15 @@ export class ProjectListComponent implements OnInit {
   onSubmit(): void {
     const searchTerm = this.searchForm.value.searchTerm!;
     const statusValue = this.searchForm.value.statusValue!;
-    if (searchTerm?.length === 0 && statusValue === null) {
+    if (searchTerm?.length === 0 && statusValue.length === 0) {
+      console.log(searchTerm, statusValue);
       this.getProjects();
     }
     else {
       this.projectService.getProjectsFiltered(this.pageSize, this.pageNumber, searchTerm, statusValue).subscribe(
         (_projects: any) => {
           this.count = _projects.totalPages;
+          console.log(this.count);
           this.dataSource = _projects.projects;
           this.searchState = true;
 
@@ -111,6 +119,22 @@ export class ProjectListComponent implements OnInit {
           if (_projects.totalPages === 0) {
             console.log("Not Found");
           }
+          if (_projects.totalPages > 0  && _projects.totalPages < 5) {
+            this.pageNumber = 1;
+            this.projectService.getProjectsFiltered(this.pageSize, this.pageNumber, searchTerm, statusValue).subscribe(
+              (_projects: any) => {
+                this.count = _projects.totalPages;
+                this.dataSource = _projects.projects;
+                this.searchState = true;
+
+                this.projectService.setSearchState({
+                  searchTerm,
+                  statusValue,
+                  resultList: _projects.projects
+                })
+              }
+            )
+          }
         }
       );
     }
@@ -120,9 +144,10 @@ export class ProjectListComponent implements OnInit {
     this.searchState = false;
     this.searchForm.value.searchTerm = '';
     this.searchForm.setValue({ searchTerm: '', statusValue: '' });
-    this.projectService.clearSearchState();
+    this.projectService.getSearchState();
+    // this.projectService.clearSearchState();
     console.log("reset search");
-    this.getProjects();
+    // this.getProjects();
   }
 
   onDeleteProject(id: number) {
@@ -213,4 +238,15 @@ export class ProjectListComponent implements OnInit {
     )
   };
 
+  onSorting(sort: Sort) {
+    this.projectService.getSortedProjects(this.pageSize, this.pageNumber, sort).subscribe({
+      next: (_projects: any) => {
+        this.dataSource = _projects.projects;
+      }
+    });
+  }
+
+  routeToUpdatePage(projectId: number) {
+    this.router.navigate(['/project/update/' + projectId]);
+  }
 }

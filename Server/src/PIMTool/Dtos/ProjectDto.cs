@@ -15,5 +15,4 @@ public class ProjectDto
     public DateTime StartDate { get; set; }
     public DateTime? EndDate { get; set; }
     public decimal GroupId { get; set; }
-    public string[] Visas { get; set; } = null!;
 }

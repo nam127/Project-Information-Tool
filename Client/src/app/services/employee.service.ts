@@ -8,10 +8,14 @@ import { Employee } from '../models/employee';
 })
 export class EmployeeService {
 
-constructor(private httpClient: HttpClient) { }
+  constructor(private httpClient: HttpClient) { }
 
-getEmployeesByVisa(visa: string) {
-  return this.httpClient.get<Array<Employee>>(`${PROJECT_BASE_URL}/Employee?visa=${visa}`);
-}
+  getEmployeesByVisa(visa: string) {
+    return this.httpClient.get<Array<Employee>>(`${PROJECT_BASE_URL}/Employee?visa=${visa}`);
+  }
+
+  getVisasByProjectId(projectId: number) {
+    return this.httpClient.get(`${PROJECT_BASE_URL}/Employee/find-visas?projectId=${projectId}`);
+  }
 
 }

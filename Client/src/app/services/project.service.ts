@@ -1,7 +1,8 @@
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, catchError, throwError } from 'rxjs';
+import { Observable, catchError, map, of, throwError } from 'rxjs';
 import { Project } from '../models/project';
+import { Sort } from '@angular/material/sort';
 
 export const PROJECT_BASE_URL = 'https://localhost:7099/api/v1';
 
@@ -14,6 +15,10 @@ export class ProjectService {
 
   getProjects(pageSize: number, pageNumber: number): Observable<Array<Project>> {
     return this.httpClient.get<Array<Project>>(`${PROJECT_BASE_URL}/Project?` + `pageNumber=${pageNumber}&pageSize=${pageSize}`);
+  }
+
+  getSortedProjects(pageSize: number, pageNumber: number, sort: Sort): Observable<Array<Project>> {
+    return this.httpClient.get<Array<Project>>(`${PROJECT_BASE_URL}/Project?` + `pageNumber=${pageNumber}&pageSize=${pageSize}&orderBy=${sort.active} ${sort.direction}`);
   }
 
   getProjectsFiltered(pageSize: number, pageNumber: number, searchTerm: string | null, statusValue: string | null) {
@@ -57,12 +62,11 @@ export class ProjectService {
     this.searchState = state;
   }
 
-  createProject(project: Project){
+  createProject(project: Project) {
     return this.httpClient.post(`${PROJECT_BASE_URL}/Project`, project);
   }
 
-  clearSearchState() 
-  {
+  clearSearchState() {
     const state: {
       searchTerm: string;
       statusValue: string;
@@ -72,4 +76,19 @@ export class ProjectService {
     this.setSearchState(state);
   }
 
+  getProjectById(projectId: number) {
+    return this.httpClient.get(`${PROJECT_BASE_URL}/Project/${projectId}`);
+  }
+
+  updateProject(projectId: any, project: Project) {
+    console.log('project to update', project);
+    return this.httpClient.put(`${PROJECT_BASE_URL}/Project/update/${projectId}`, project);
+  }
+
+  checkProjectNumber(projectNumber: any){
+    const param = new HttpParams().set('projectNumber', projectNumber);
+    return this.httpClient.get(`${PROJECT_BASE_URL}/Project/check-project-number`, {
+      params: param
+    })
+  }
 }

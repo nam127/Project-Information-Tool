@@ -22,4 +22,11 @@ public class EmployeeService : IEmployeeService
         };
         return response;
     }
+
+    public EmployeeResponse GetEmployeeVisas(int projectId)
+    {
+        var employees = _employeeRepository.FindEmployeeVisaByProject(projectId);
+        var response = new EmployeeResponse { Employees = employees };
+        return response;
+    }
 }

@@ -18,5 +18,12 @@ namespace PIMTool.Controllers
             var employees = _employeeService.GetEmployee(visa);
             return Ok(employees);
         }
+
+        [HttpGet("find-visas")]
+        public ActionResult<EmployeeResponse> FindVisasByProjectId([FromQuery] int projectId)
+        {
+            var visas = _employeeService.GetEmployeeVisas(projectId);
+            return Ok(visas);
+        }
     }
 }

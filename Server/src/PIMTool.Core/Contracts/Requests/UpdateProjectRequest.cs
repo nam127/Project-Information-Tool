@@ -4,7 +4,6 @@ using PIMTool.Core.Attributes;
 namespace PIMTool.Core.Contracts.Requests;
 public class UpdateProjectRequest 
 {
-    public decimal Id{get; set;}
     [Required]
     public decimal GroupId { get; set; }
     

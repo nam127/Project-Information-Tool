@@ -24,15 +24,6 @@ namespace PIMTool.Middlewares
             }
             catch (Exception ex)
             {
-                // _logger.LogError(ex, "Unexpected exception");
-                // context.Response.ContentType = "application/json";
-                // context.Response.StatusCode = 500;
-
-                // await context.Response.WriteAsync(new
-                // {
-                //     Code = 500,
-                //     Message = ex.Message
-                // }.ToString() ?? string.Empty);
                 await HandleExceptionAsync(context, ex);
             }   
         }

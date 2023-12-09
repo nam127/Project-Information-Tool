@@ -4,5 +4,6 @@ namespace PIMTool.Core.Interfaces.Services;
 
 public interface IEmployeeService
 {
-    EmployeeResponse GetEmployee(string visa);   
+    EmployeeResponse GetEmployee(string visa);  
+    EmployeeResponse GetEmployeeVisas(int projectId);
 }

@@ -41,7 +41,8 @@ namespace PIMTool.Controllers
         public async Task<ActionResult<ProjectDto>> Get([FromRoute][Required] int id)
         {
             var entity = await _projectService.GetProjectAsync(id);
-            return Ok(_mapper.Map<ProjectDto>(entity));
+            var projectDto = _mapper.Map<Project, ProjectDto>(entity);
+            return projectDto;
         }
 
         [HttpPost]
@@ -76,6 +77,13 @@ namespace PIMTool.Controllers
         {
             var projectUpdated = await _projectService.UpdateProjectAsync(id, updateProjectRequest);
             return Ok(projectUpdated);
+        }
+
+        [HttpGet("check-project-number")]
+        public async Task<IActionResult> CheckProjectNumberExist([FromQuery] int projectNumber)
+        {
+            var project = await _projectService.CheckByProjectNumber(projectNumber);
+            return Ok(project);
         }
 
     }

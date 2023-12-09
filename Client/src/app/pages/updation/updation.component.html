@@ -1,0 +1,108 @@
+<div class="mt-5">
+    <h2>Edit Project information</h2>
+</div>
+<div class="flex justify-center items-center mt-5 pt-1">
+    <div class="w-2/3">
+        <form [formGroup]="projectForm" class="space-y-4">
+            <div class="mb-12">
+                <label class="font-medium">
+                    Project Number <span class="text-red-600">&#8277;</span>
+                    <input type="text" formControlName="projectNumber"
+                        class="ml-20 px-4 py-1 border rounded-md focus:outline-none focus:border-indigo-500">
+                </label>
+            </div>
+
+            <div style="margin-bottom: 3rem;">
+                <label class="font-medium">
+                    Project Name <span class="text-red-600">&#8277;</span>
+                    <input type="text" formControlName="name"
+                        class="ml-20 px-4 py-1 border rounded-md focus:outline-none focus:border-indigo-500">
+                </label>
+            </div>
+
+            <div style="margin-bottom: 3rem;">
+                <label class="font-medium">
+                    Customer <span class="text-red-600">&#8277;</span>
+                    <input type="text" formControlName="customer"
+                        class="ml-20 px-4 py-1 border rounded-md focus:outline-none focus:border-indigo-500">
+                </label>
+            </div>
+
+            <div style="margin-bottom: 3rem;">
+                <label class="font-medium">
+                    Group <span class="text-red-600">&#8277;</span>
+                    <select formControlName="groupId"
+                        class="ml-20 px-4 py-1 border rounded-md focus:outline-none focus:border-indigo-500"
+                        *ngFor="let group of groups">
+                        <option [value]="group.id">{{group.id}}</option>
+                    </select>
+                </label>
+            </div>
+
+            <div>
+                <label class="font-medium">
+                    Members <span class="text-red-600">&#8277;</span>
+                    <p-autoComplete 
+                    formControlName="visas"
+                    [suggestions]="visas"
+                    (completeMethod)="getEmployeesByVisa($event)"
+                    [multiple]="true"
+                    field="visa">
+                        <ng-template let-employee pTemplate="item">
+                            <div>
+                                <div>{{ employee.visa }}: {{ employee.lastName + ' ' + employee.firstName }}</div>
+                            </div>
+                        </ng-template>
+                    </p-autoComplete>
+                </label>
+            </div>
+
+            <div style="margin-bottom: 3rem;">
+                <label class="font-medium">
+                    Status <span class="text-red-600">&#8277;</span>
+                    <select formControlName="status"
+                        class="ml-20 px-4 py-1 border rounded-md focus:outline-none focus:border-indigo-500">
+                        <option value="NEW">NEW</option>
+                        <option value="PLA">PLA</option>
+                        <option value="INP">INP</option>
+                        <option value="FIN">FIN</option>
+                    </select>
+                </label>
+            </div>
+            <div class="flex" style="margin-bottom: 3rem;">
+            <div>
+                <label class="font-medium">
+                    Start Date <span class="text-red-600">&#8277;</span>
+                    <input type="date" formControlName="startDate"
+                        class="ml-20 px-4 py-1 border rounded-md focus:outline-none focus:border-indigo-500">
+                </label>
+            </div>
+
+            <div class="ml-20">
+                <label class="font-medium">
+                    End Date
+                    <input type="date" formControlName="endDate"
+                        class="ml-20 px-4 py-1 border rounded-md focus:outline-none focus:border-indigo-500">
+                </label>
+            </div>
+            </div>
+
+            <div class="flex justify-end mb-15">
+                <div class="flex justify-center">
+                    <button type="submit"
+                        class="w-40 flex justify-center py-2 px-4 mx-20 border border-transparent rounded-md shadow-sm text-sm font-medium bg-zinc-200 hover:bg-zinc-300 focus:outline-none">Cancel</button>
+                    <p-button (click)="onSubmit()" [disabled]="projectForm.invalid">Edit Project</p-button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<p-dialog header="PIM Tool" 
+[modal]="true" 
+[(visible)]="visible" 
+[style]="{width: '50vw'}"
+[maximizable]="true">
+<p>
+    {{errorMessage}}
+</p>
+</p-dialog>

@@ -23,7 +23,7 @@ namespace PIMTool.Test.Services
             await Context.SaveChangesAsync();
 
             // Act
-            var result = await _projectService.GetAsync(project.Id);
+            var result = await _projectService.GetProjectAsync((int)project.Id);
 
             // Assert
             Assert.IsNotNull(result);

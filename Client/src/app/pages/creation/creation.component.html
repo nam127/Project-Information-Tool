@@ -1,31 +1,73 @@
 <div class="mt-5">
     <h2>New Project</h2>
 </div>
+<div *ngIf="projectForm.invalid && projectForm.touched">
+<p-messages [(value)]="alertMessage"></p-messages>
+</div>
 <div class="flex justify-center items-center mt-5 pt-1">
     <div class="w-2/3">
-        <form [formGroup]="projectForm" class="space-y-4">
+        <form [formGroup]="projectForm" class="space-y-4" (ngSubmit)="onSubmit()">
             <div class="mb-12">
                 <label class="font-medium">
                     Project Number <span class="text-red-600">&#8277;</span>
-                    <input type="text" formControlName="projectNumber"
+                    <input type="text" formControlName="projectNumber" [class.invalid]="projectForm.get('projectNumber')?.invalid
+                    && (projectForm.controls['projectNumber'].dirty
+                    || projectForm.controls['projectNumber'].touched)"
                         class="ml-20 px-4 py-1 border rounded-md focus:outline-none focus:border-indigo-500">
                 </label>
+                <small class="text-red-600" *ngIf="projectForm.get('projectNumber')?.hasError('required')
+                && (projectForm.controls['projectNumber'].dirty
+                || projectForm.controls['projectNumber'].touched)">
+                    Project Number is required
+                </small>
+                <small class="text-red-600" *ngIf="(projectForm.get('projectNumber')?.hasError('min')
+                || projectForm.get('projectNumber')?.hasError('max'))
+                && projectForm.controls['projectNumber'].dirty">
+                    Project Number must be between 1000 to 9999
+                </small>
+                <small class="text-red-600" *ngIf="projectForm.get('projectNumber')?.hasError('projectNumberExists')">
+                    The project number already existed. Please select a different project number
+                </small>
+                <div *ngIf="projectForm.get('projectNumber')?.status === 'PENDING'">
+                    Validating...
+                  </div>
             </div>
 
             <div style="margin-bottom: 3rem;">
                 <label class="font-medium">
                     Project Name <span class="text-red-600">&#8277;</span>
-                    <input type="text" formControlName="name"
+                    <input type="text" formControlName="name" [class.invalid]="projectForm.get('name')?.invalid
+                    && (projectForm.controls['name'].dirty
+                    || projectForm.controls['name'].touched)"
                         class="ml-20 px-4 py-1 border rounded-md focus:outline-none focus:border-indigo-500">
                 </label>
+                <small class="text-red-600" *ngIf="projectForm.get('name')?.hasError('required')
+                && (projectForm.controls['name'].dirty
+                || projectForm.controls['name'].touched)">
+                    Project Name is required
+                </small>
+                <small class="text-red-600" *ngIf="projectForm.get('name')?.hasError('maxlength')
+                && projectForm.controls['name'].dirty">
+                    Project Name cannot be more than 50 characters
+                </small>
             </div>
-
             <div style="margin-bottom: 3rem;">
                 <label class="font-medium">
                     Customer <span class="text-red-600">&#8277;</span>
-                    <input type="text" formControlName="customer"
+                    <input type="text" formControlName="customer" [class.invalid]="projectForm.get('customer')?.invalid
+                    && (projectForm.controls['customer'].dirty
+                    || projectForm.controls['customer'].touched)"
                         class="ml-20 px-4 py-1 border rounded-md focus:outline-none focus:border-indigo-500">
                 </label>
+                <small class="text-red-600" *ngIf="projectForm.get('customer')?.hasError('required')
+                && (projectForm.controls['customer'].dirty
+                || projectForm.controls['customer'].touched)">
+                    Customer is required
+                </small>
+                <small class="text-red-600" *ngIf="projectForm.get('customer')?.hasError('maxlength')
+                ">
+                    Customer cannot be more than 50 characters
+                </small>
             </div>
 
             <div style="margin-bottom: 3rem;">
@@ -33,21 +75,24 @@
                     Group <span class="text-red-600">&#8277;</span>
                     <select formControlName="groupId"
                         class="ml-20 px-4 py-1 border rounded-md focus:outline-none focus:border-indigo-500"
-                        *ngFor="let group of groups">
+                        [class.invalid]="projectForm.get('groupId')?.invalid
+                    && (projectForm.controls['groupId'].dirty
+                    || projectForm.controls['groupId'].touched)" *ngFor="let group of groups">
                         <option [value]="group.id">{{group.id}}</option>
                     </select>
                 </label>
+                <small class="text-red-600" *ngIf="projectForm.get('group')?.hasError('required')
+                && (projectForm.controls['group'].dirty
+                || projectForm.controls['group'].touched)">
+                    Group is required
+                </small>
             </div>
 
             <div>
                 <label class="font-medium">
                     Members <span class="text-red-600">&#8277;</span>
-                    <p-autoComplete 
-                    formControlName="visas"
-                    [suggestions]="visas"
-                    (completeMethod)="getEmployeesByVisa($event)"
-                    [multiple]="true"
-                    field="visa">
+                    <p-autoComplete formControlName="visas" [suggestions]="visas"
+                        (completeMethod)="getEmployeesByVisa($event)" [multiple]="true" field="visa">
                         <ng-template let-employee pTemplate="item">
                             <div>
                                 <div>{{ employee.visa }}: {{ employee.lastName + ' ' + employee.firstName }}</div>
@@ -70,28 +115,28 @@
                 </label>
             </div>
             <div class="flex" style="margin-bottom: 3rem;">
-            <div>
-                <label class="font-medium">
-                    Start Date <span class="text-red-600">&#8277;</span>
-                    <input type="date" formControlName="startDate"
-                        class="ml-20 px-4 py-1 border rounded-md focus:outline-none focus:border-indigo-500">
-                </label>
-            </div>
+                <div>
+                    <label class="font-medium">
+                        Start Date <span class="text-red-600">&#8277;</span>
+                        <input type="date" formControlName="startDate"
+                            class="ml-20 px-4 py-1 border rounded-md focus:outline-none focus:border-indigo-500">
+                    </label>
+                </div>
 
-            <div class="ml-20">
-                <label class="font-medium">
-                    End Date
-                    <input type="date" formControlName="endDate"
-                        class="ml-20 px-4 py-1 border rounded-md focus:outline-none focus:border-indigo-500">
-                </label>
-            </div>
+                <div class="ml-20">
+                    <label class="font-medium">
+                        End Date
+                        <input type="date" formControlName="endDate"
+                            class="ml-20 px-4 py-1 border rounded-md focus:outline-none focus:border-indigo-500">
+                    </label>
+                </div>
             </div>
 
             <div class="flex justify-end mb-15">
                 <div class="flex justify-center">
-                    <button type="submit"
+                    <button (click)="onCancel()" type="submit"
                         class="w-40 flex justify-center py-2 px-4 mx-20 border border-transparent rounded-md shadow-sm text-sm font-medium bg-zinc-200 hover:bg-zinc-300 focus:outline-none">Cancel</button>
-                    <p-button (click)="onSubmit()" [disabled]="projectForm.invalid">Create Project</p-button>
+                    <p-button type="submit" [disabled]="projectForm.invalid">Create Project</p-button>
                 </div>
             </div>
         </form>

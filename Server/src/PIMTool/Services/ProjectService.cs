@@ -9,6 +9,7 @@ using PIMTool.Core.Domain.Objects;
 using PIMTool.Core.Exceptions;
 using PIMTool.Core.Interfaces.Repositories;
 using PIMTool.Core.Interfaces.Services;
+using PIMTool.Helpers;
 
 namespace PIMTool.Services
 {
@@ -48,9 +49,19 @@ namespace PIMTool.Services
         public ProjectResponse GetProjectsByFilter(FilterParameters filterParameters)
         {
             var projects = _projectRepository.GetProjectsFiltered(filterParameters);
+            var projectsFiltered = PagedListHelper<Project>
+                .ToPagedList(projects,
+                filterParameters.PageNumber,
+                filterParameters.PageSize);
+
+            if (projectsFiltered.Count == 0)
+            {
+
+            }
+
             var response = new ProjectResponse
             {
-                Projects = projects,
+                Projects = projectsFiltered,
                 pageNumber = filterParameters.PageNumber,
                 pageSize = filterParameters.PageSize,
                 totalPages = projects.Count()
@@ -58,9 +69,10 @@ namespace PIMTool.Services
             return response;
         }
 
-        public async Task<Project?> GetProjectAsync(int id, CancellationToken cancellationToken = default)
+        public async Task<Project> GetProjectAsync(int id, CancellationToken cancellationToken = default)
         {
-            return await _projectRepository.GetAsync(id, cancellationToken);
+            var project = await _projectRepository.GetAsync(id, cancellationToken);
+            return project;
         }
         public async Task<CreateProjectRequest> AddProjectAsync(CreateProjectRequest projectRequest, CancellationToken cancellationToken = default)
         {
@@ -99,40 +111,45 @@ namespace PIMTool.Services
 
         public async Task<UpdateProjectRequest> UpdateProjectAsync(int id, UpdateProjectRequest updateProject, CancellationToken cancellationToken = default)
         {
+            var projectExist = await _projectRepository.GetAsync(id, cancellationToken);
+
+            if (projectExist is null)
+            {
+                throw new ProjectNotFoundException(ExceptionMessageConstantsException.PROJECT_NOT_FOUND);
+            }
+
+            var employeeIds = await _employeeRepository.GetEmployeeByVisas(updateProject.Visas);
+
+            if (employeeIds.Count() == 0)
+            {
+                throw new Exception("Not found member");
+            }
+
+            if (updateProject.Visas.Length > 0)
+            {
+                var employees = _employeeRepository.FindEmployeeVisaByProject((int)projectExist.Id);
+                var projEmpFoundByVisas = new List<ProjectEmployee>();
+
+                foreach (var employee in employees)
+                {
+                    var projEmpFoundByVisasList = _projectEmployeeRepository.GetProjectEmployeeList((int)projectExist.Id, (int)employee.Id);
+                    projEmpFoundByVisas.AddRange(projEmpFoundByVisasList);
+                }
+                _projectEmployeeRepository.Delete(projEmpFoundByVisas.ToArray());
+                await _projectEmployeeRepository.SaveChangesAsync(cancellationToken);
+
+                var employeeListFound = await _employeeRepository.GetEmployeeByVisas(updateProject.Visas);
+
+                var updatedEmployees = employeeListFound.Select(employee =>
+                new ProjectEmployee { ProjectId = projectExist.Id, EmployeeId = employee.Id });
+
+                await _projectEmployeeRepository.AddRangeAsync(updatedEmployees.ToArray());
+            }
+
+            var project = _mapper.Map(updateProject, projectExist);
+            _projectRepository.Update(project);
             try
             {
-                var projectExist = await _projectRepository.GetAsync((int)updateProject.Id, cancellationToken);
-
-                if (projectExist is null)
-                {
-                    throw new ProjectNotFoundException(ExceptionMessageConstantsException.PROJECT_NOT_FOUND);
-                }
-                var oldProjectRequest = _mapper.Map<UpdateProjectRequest>(projectExist);
-                var employeeIds = await _employeeRepository.GetEmployeeListByVisas(updateProject.Visas);
-
-                if (employeeIds.Count() == 0)
-                {
-                    throw new Exception("Not found member");
-                }
-
-                if (oldProjectRequest.Visas.Length > 0)
-                {
-                    //var employeeFound = await _employeeRepository.GetByVisa(oldProjectRequest.Visas);
-                    var projEmpFoundByVisas = _projectEmployeeRepository.GetProjectEmployeeList((int)projectExist.Id, (int)projectExist.Id);
-                    //projectExist.ProjectEmployees.Clear();
-                    _projectEmployeeRepository.Delete(projEmpFoundByVisas.ToArray());
-                }
-
-                if (updateProject.Visas != null)
-                {
-                    var employeeListFound = await _employeeRepository.GetEmployeeByVisas(updateProject.Visas);
-                    var updatedEmployees = employeeListFound.Select(employee =>
-                    new ProjectEmployee { ProjectId = projectExist.Id, EmployeeId = employee.Id });
-                    await _projectEmployeeRepository.AddRangeAsync(updatedEmployees.ToArray());
-                }
-                
-                var project = _mapper.Map(updateProject, projectExist);
-                _projectRepository.Update(project);
                 await _projectRepository.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             }
             catch (DbUpdateConcurrencyException)
@@ -160,6 +177,16 @@ namespace PIMTool.Services
                 _projectRepository.DeleteAsync(project);
             }
             await _projectRepository.SaveChangesAsync(cancellationToken);
+        }
+
+        public async Task<bool> CheckByProjectNumber(int projectNumber)
+        {
+            var project = await _projectRepository.GetProjectAsync(projectNumber);
+            if (project != null)
+            {
+                throw new DupplicateProjectNumberException(ExceptionMessageConstantsException.DUPPLICATE_NUMBER_MESSAGE);
+            }
+            return true;
         }
     }
 }

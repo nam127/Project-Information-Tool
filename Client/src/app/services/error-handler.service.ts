@@ -20,6 +20,9 @@ public handleError = (error: HttpErrorResponse) => {
   else if(error.status === 400){
     this.handle400Error(error);
   }
+  else if(error.status === 409){
+    this.handle409Error(error);
+  }
 }
 
 private handle500Error = (error: HttpErrorResponse) => {
@@ -33,6 +36,10 @@ private handle404Error = (error: HttpErrorResponse) => {
 }
 
 private handle400Error = (error: HttpErrorResponse) => {
+  this.createErrorMessage(error);
+}
+
+private handle409Error = (error: HttpErrorResponse) => {
   this.createErrorMessage(error);
 }
 

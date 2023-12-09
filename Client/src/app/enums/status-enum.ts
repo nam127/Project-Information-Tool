@@ -1,6 +1,7 @@
 export enum StatusEnum {
-    NEW = 0,
-    PLA = 1, 
-    INP = 2,
-    FIN = 3
+    NONE = 0,
+    NEW = 1,
+    PLA = 2, 
+    INP = 3,
+    FIN = 4
 }

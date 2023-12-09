@@ -40,7 +40,7 @@ public class ProjectRepository : Repository<Project>, IProjectRepository
         return await Get().SingleOrDefaultAsync(x => x.ProjectNumber == projNum);
     }
 
-    public IEnumerable<Project?> GetProjectsFiltered(FilterParameters filterParameters)
+    public IQueryable<Project> GetProjectsFiltered(FilterParameters filterParameters)
     {
         var projects = _set.Include(p => p.ProjectEmployees).ThenInclude(e => e.Employee)
            .AsNoTracking();
@@ -59,11 +59,8 @@ public class ProjectRepository : Repository<Project>, IProjectRepository
                 .OrderBy(o => o.ProjectNumber);
             }
         }
-            
-        return PagedListHelper<Project>.ToPagedList(
-            projects,
-            filterParameters.PageNumber,
-            filterParameters.PageSize);
+
+        return projects;
     }
 }
 

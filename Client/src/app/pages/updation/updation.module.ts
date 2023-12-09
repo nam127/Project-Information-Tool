@@ -1,27 +1,29 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-
-import { CreationRoutingModule } from './creation-routing.module';
-import { CreationComponent } from './creation.component';
+import { CommonModule, DatePipe } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { AutoCompleteModule } from 'primeng/autocomplete';
-import { MessagesModule } from 'primeng/messages';
+import { DialogModule } from 'primeng/dialog';
+
+
+import { UpdationRoutingModule } from './updation-routing.module';
+import { UpdationComponent } from './updation.component';
+
 
 @NgModule({
   declarations: [
-    CreationComponent
+    UpdationComponent
   ],
   imports: [
     CommonModule,
-    CreationRoutingModule,
+    UpdationRoutingModule,
     MatFormFieldModule,
     ReactiveFormsModule,
     ButtonModule,
     AutoCompleteModule,
-    MessagesModule
-  ]
+    DialogModule
+  ],
+  providers: [DatePipe]
 })
-export class CreationModule {}
-
+export class UpdationModule { }

@@ -7,18 +7,24 @@ namespace PIMTool.MappingProfiles
 {
     public class AutoMapperProfile : Profile
     {
-        public AutoMapperProfile()
+        public AutoMapperProfile() : base(nameof(AutoMapperProfile))
         {
             MappingProject();
             MappingEmployee();
         }
 
+        //public AutoMapperProfile()
+        //{
+        //    MappingProject();
+        //    MappingEmployee();
+        //}
+
+
+
         private void MappingProject()
         {
-            CreateMap<Project, ProjectDto>()
-                .ForMember(request => request.Visas,
-                opt => opt.MapFrom(src => src.ProjectEmployees.Select(pe => pe.Employee.Visa)))
-                .ReverseMap();
+            CreateMap<Project, ProjectDto>();
+        
 
             CreateMap<CreateProjectRequest, Project>();
             CreateMap<UpdateProjectRequest, Project>()

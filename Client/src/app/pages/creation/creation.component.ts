@@ -1,12 +1,16 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Message } from 'primeng/api';
+import { Observable, catchError, debounceTime, map, of, switchMap, timer } from 'rxjs';
 import { Employee } from 'src/app/models/employee';
 import { Group } from 'src/app/models/group';
 import { EmployeeService } from 'src/app/services/employee.service';
 import { ErrorHandlerService } from 'src/app/services/error-handler.service';
 import { GroupService } from 'src/app/services/group.service';
 import { ProjectService } from 'src/app/services/project.service';
+import { dateRangeValidator } from 'src/app/validators/DateValidator';
+import { validateProjectNumber } from 'src/app/validators/ProjectNumberValidator';
 
 interface AutoCompleteCompleteEvent {
   originalEvent: Event;
@@ -19,10 +23,12 @@ interface AutoCompleteCompleteEvent {
   styleUrls: ['./creation.component.css']
 })
 export class CreationComponent implements OnInit {
+
   projectForm: FormGroup;
   groups: Group[] = [];
   visas: Employee[] = [];
   errorMessage: string = '';
+  alertMessage: Message[] = [];
 
   constructor(private projectService: ProjectService,
     private groupService: GroupService,
@@ -32,18 +38,34 @@ export class CreationComponent implements OnInit {
     private errHandler: ErrorHandlerService) {
     this.projectForm = this.fb.group(
       {
-        projectNumber: ['', Validators.required],
-        customer: ['', Validators.required],
-        status: ['NEW'],
-        name: ['', Validators.required],
-        startDate: ['', Validators.required],
-        endDate: ['', Validators.required],
+        projectNumber: ['', Validators.compose([
+          Validators.required,
+          Validators.min(1000),
+          Validators.max(9999),
+        ]),
+        validateProjectNumber(projectService)
+      ],
+        customer: ['', Validators.compose([
+          Validators.required,
+          Validators.maxLength(50)
+        ])],
+        status: ['NEW', Validators.required],
+        name: ['', Validators.compose([
+          Validators.required,
+          Validators.maxLength(50)
+        ])],
+        startDate: ['', Validators.compose([
+          Validators.required,
+          dateRangeValidator()
+        ])],
+        endDate: [''],
         groupId: ['', Validators.required],
         visas: ['', Validators.required]
       }
     );
   }
   ngOnInit(): void {
+    this.alertMessage = [{ severity: 'error', detail: 'Please enter all mandatory fields (*)' }];
     this.getGroupIds();
   }
 
@@ -92,6 +114,10 @@ export class CreationComponent implements OnInit {
         console.log(this.visas);
       }
     );
+  }
+
+  onCancel() {
+    this.router.navigate(['']);
   }
 
 }
