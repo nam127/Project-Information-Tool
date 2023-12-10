@@ -1,0 +1,19 @@
+{
+    "help": "Trợ giúp",
+    "log-out": "Đăng xuất",
+    "project-list": "Danh sách dự án",
+    "project-search": "Mã dự án, tên, tên khách hàng",
+    "project-status": "Trạng thái dự án",
+    "search-button": "Tìm dự án",
+    "reset-search": "Đặt lại tìm kiếm",
+    "number": "Mã",
+    "name": "Tên",
+    "status": "Trạng thái",
+    "customer": "Khách hàng",
+    "start-date": "Ngày bắt đầu",
+    "delete": "Xóa",
+    "delete-selected": "Xóa những dự án này",
+    "project": "Dự án",
+    "new": "Tạo mới",
+    "supplier": "Nhà cung cấp"
+}

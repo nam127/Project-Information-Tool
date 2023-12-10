@@ -1,9 +1,9 @@
 <app-header></app-header>
-<mat-drawer-container class="min-h-full max-w-10xl mx-auto border-x">
-    <mat-drawer opened mode="side">
+<mat-drawer-container class="fixed flex min-h-full max-w-10xl mx-auto border-x">
+    <mat-drawer opened mode="side" class="w-60">
         <app-sidebar></app-sidebar>
     </mat-drawer>
-    <mat-drawer-content>
+    <mat-drawer-content class="flex-1 overflow-auto">
         <router-outlet></router-outlet>
     </mat-drawer-content>
 </mat-drawer-container>

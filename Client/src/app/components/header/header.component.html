@@ -9,13 +9,13 @@
     <span class="flex-grow"></span>
 
     <span class="flex items-center space-x-4 mr-20 text-sm">
-        <button class="text-sky-500" [ngClass]="">EN</button>
+        <button class="text-sky-500" [ngClass]="" (click)="setLanguage('en')">EN</button>
         <span class="text-sky-500">|</span>
-        <button class="text-sky-500">FN</button>
+        <button class="text-sky-500" (click)="setLanguage('vn')">VN</button>
     </span>
 
     <span class="flex items-center space-x-4 mr-20 text-sm">
-        <button class="mr-20">Help</button>
-        <button class="text-gray-400 mr-20">Log out</button>
+        <button class="mr-20">{{"help" | translate}}</button>
+        <button class="text-gray-400 mr-20">{{"log-out" | translate}}</button>
     </span>
 </mat-toolbar>

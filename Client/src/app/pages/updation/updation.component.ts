@@ -9,6 +9,7 @@ import { EmployeeService } from 'src/app/services/employee.service';
 import { ErrorHandlerService } from 'src/app/services/error-handler.service';
 import { GroupService } from 'src/app/services/group.service';
 import { ProjectService } from 'src/app/services/project.service';
+import { dateRangeValidator } from 'src/app/validators/DateValidator';
 
 interface AutoCompleteCompleteEvent {
   originalEvent: Event;
@@ -42,11 +43,20 @@ export class UpdationComponent implements OnInit {
     this.projectForm = this.fb.group(
       {
         projectNumber: ['', Validators.required],
-        customer: ['', Validators.required],
-        status: ['NEW'],
-        name: ['', Validators.required],
-        startDate: ['', Validators.required],
-        endDate: ['', Validators.required],
+        customer: ['', Validators.compose([
+          Validators.required,
+          Validators.maxLength(50)
+        ])],
+        status: ['NEW', Validators.required],
+        name: ['', Validators.compose([
+          Validators.required,
+          Validators.maxLength(50)
+        ])],
+        startDate: ['', Validators.compose([
+          Validators.required,
+          dateRangeValidator()
+        ])],
+        endDate: [''],
         groupId: ['', Validators.required],
         visas: ['', Validators.required]
       }

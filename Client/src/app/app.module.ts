@@ -22,7 +22,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatOptionModule } from '@angular/material/core';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -35,9 +35,10 @@ import { StatusPipe } from './custom-pipes/status-pipe.pipe';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { MatSortModule } from '@angular/material/sort';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { Location } from '@angular/common';
 
-export function createTranslateLoader(http: HttpClient) {
-  return new TranslateHttpLoader(http, './assets/i18n/', '.json');
+export function createTranslateLoader(http: HttpClient, loca: Location) {
+  return new TranslateHttpLoader(http, loca.prepareExternalUrl("/assets/i18n/"));
 }
 
 @NgModule({
@@ -87,4 +88,9 @@ export function createTranslateLoader(http: HttpClient) {
   providers: [ConfirmationService, MessageService],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+  constructor(translate: TranslateService) {
+    translate.setDefaultLang("en");
+    translate.addLangs(["en", "fr"]);
+  }
+ }

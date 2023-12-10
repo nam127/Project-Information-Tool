@@ -1,0 +1,19 @@
+{
+    "help": "Help",
+    "log-out": "Log out",
+    "project-list": "Project List",
+    "project-search": "Project number, name, customer name",
+    "project-status": "Project Status",
+    "search-button": "Search Project",
+    "reset-search": "Reset Search",
+    "number": "Number",
+    "name": "Name",
+    "status": "Status",
+    "customer": "Customer",
+    "start-date": "Start Date",
+    "delete": "Delete",
+    "delete-selected": "delete selected projects",
+    "project": "Project",
+    "new": "New",
+    "supplier": "Supplier"
+}
